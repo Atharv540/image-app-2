@@ -95,7 +95,7 @@ db.collection('images').onSnapshot(snapshot=>{
 })
 
 doAsDirected = async (url, id) => {
-    let directions = window.prompt('Type "delete" to delete this image, or "open" to open this image in  new tab');
+    let directions = window.prompt('Type "delete" to delete this image, or "open" to open this image in  new tab', 'Open').toLowerCase();
     if(directions === 'delete'){
         deleteItem(id);
     }
