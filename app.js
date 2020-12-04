@@ -26,7 +26,7 @@ displayImages = async (search_input_value) => {
         }
         image_present = 0;
     }
-    db.collection('images').get().then(snapshot=>{
+    db.collection('images').orderBy('rating', 'desc').get().then(snapshot=>{
         snapshot.docs.forEach(doc=>{
             search_input_value.value = search_input_value.value.toLowerCase();
             if(doc.data().character.toLowerCase().includes(search_input_value.value) || search_input_value.value.includes(doc.data().character.toLowerCase()) || oneSameWord(search_input_value.value, doc.data().character.toLowerCase(), doc)===true){
@@ -95,11 +95,25 @@ db.collection('images').onSnapshot(snapshot=>{
 })
 
 doAsDirected = async (url, id) => {
-    let directions = window.prompt('Type "delete" to delete this image, or "open" to open this image in  new tab', 'Open').toLowerCase();
+    let directions = window.prompt('Type "delete" to delete this image, or "open" to open this image in  new tab or "Rate" to rate this image', 'Open').toLowerCase();
     if(directions === 'delete'){
         deleteItem(id);
     }
     else if(directions === 'open'){
         openItemInNewWindow(url);
+    }
+    else if(directions === 'rate'){
+        let current_raters = undefined
+        let current_total_rating_number = undefined
+        let rating_input = window.prompt('How much do you rate this image?');
+        await db.collection('images').doc(id).get().then(snapshot=>{
+            current_raters = snapshot.data().raters;
+            current_total_rating_number = snapshot.data().total_rating_number;
+        })
+        db.collection('images').doc(id).update({
+            rating: (current_total_rating_number+parseFloat(rating_input))/(current_raters+1),
+            total_rating_number: current_total_rating_number+parseFloat(rating_input),
+            raters: current_raters+1
+        })
     }
 }
