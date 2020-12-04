@@ -106,14 +106,19 @@ doAsDirected = async (url, id) => {
         let current_raters = undefined
         let current_total_rating_number = undefined
         let rating_input = window.prompt('How much do you rate this image?');
-        await db.collection('images').doc(id).get().then(snapshot=>{
-            current_raters = snapshot.data().raters;
-            current_total_rating_number = snapshot.data().total_rating_number;
-        })
-        db.collection('images').doc(id).update({
-            rating: (current_total_rating_number+parseFloat(rating_input))/(current_raters+1),
-            total_rating_number: current_total_rating_number+parseFloat(rating_input),
-            raters: current_raters+1
-        })
+        if(rating_input<=5){
+            await db.collection('images').doc(id).get().then(snapshot=>{
+                current_raters = snapshot.data().raters;
+                current_total_rating_number = snapshot.data().total_rating_number;
+            })
+            db.collection('images').doc(id).update({
+                rating: (current_total_rating_number+parseFloat(rating_input))/(current_raters+1),
+                total_rating_number: current_total_rating_number+parseFloat(rating_input),
+                raters: current_raters+1
+            })
+        }
+        else{
+            console.log('This rating '+rating_input+' is too much, only rate numbers below 5!')
+        }
     }
 }
