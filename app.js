@@ -12,6 +12,9 @@ submitToDatabase = async () => {
     db.collection('images').add({
         imageUrl: image_input.value,
         character: character_input.value,
+        rating: 2,
+        raters: 2,
+        total_rating_number: 4,
     })
     image_input.value = '';
     character_input.value = '';
